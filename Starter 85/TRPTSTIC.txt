@@ -1,0 +1,30 @@
+Problem:
+K students and one mentor want to stay in a hotel that has an N' x M' rooms, arranged in NV rows and M columns. 
+The room at the intersection of the i-th row and j-th column can accommodate Aij people, and the mentor can stay in the same room as a student. 
+The distance between two rooms (1,1) and (zz, yo) is max(|i - z|, |j - y|). 
+Find the minimum possible distance between the mentor's room and the farthest student's room.
+
+Explanation:
+First, if the sum of all Aij is less than K, then it's impossible to accommodate K + 1 people in the hotel, so the answer is -1. 
+Otherwise, a valid answer always exists. Suppose we fix which room the mentor is staying in, say (z, y). 
+Note that this is only possible when Aij is not equal to 0. Suppose we also fix the maximum allowed distance D between the mentor and a student. 
+Notice that with these two constraints, the set of cells where students are allowed to stay forms a rectangular subgrid of size 4. 
+Specifically, we want all cells (i, j) such that max(|z - i|, |y - j|) < D. This means |i - z| < D and |j - y| < D. 
+From the definition of absolute value, this means -D < z - i < D and -D < y - j < D. 
+Rearranging this gives us a range of i and j, forming the rectangle [z - D, z + D] x [y - D, y + D]. 
+In particular, if K + 1 people can be fit into this rectangle, then it's possible for the maximum distance to be at most D. 
+Checking whether K + 1 people fit into this rectangle is simple to do in O(1) after some precomputation. 
+Notice that we only want the sum of all values in the specified rectangle. 
+This is doable with 2D prefix sums, a tutorial can be found here.
+
+We are now able to quickly check, for a fixed (z, y) and D, whether a maximum distance of less than D is possible. 
+However, there are N x M possible cells (z, y) and up to max(N, M) values of D for each of them, so going through them all would still be too slow. 
+However, notice that if we're able to achieve a maximum distance of less than D, then of course we can achieve a maximum distance of less than D + 1. 
+So, we only need to find the smallest D such that there exists some cell (z, y) which satisfies the condition. 
+This is exactly what binary search does! That gives us the following solution:
+
+Binary search on the value of D, from 0 to max(N, M).
+For a fixed value of D, go through all cells (z, y) such that Aij is not equal to 0, and check whether any of them allow for a maximum distance of less than D, using 2D prefix sums as discussed above. 
+For a fixed value of D, this takes O(NM) time.
+Since we're applying binary search, we check only O(log max(N, M)) values of D, for a solution that's O(NM log max(N, M)).
+Time Complexity: O(NM log max(N, M)) per test case.

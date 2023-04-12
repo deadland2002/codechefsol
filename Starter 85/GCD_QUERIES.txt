@@ -1,0 +1,30 @@
+Problem:
+You have been given an array of N integers, each between 1 and 10^6. You need to answer Q queries on this array of the following form:
+
+Given an integer z, find the smallest integer y present in the array such that gcd(z, y) > 1, print it, and delete it from the array.
+If no such y exists, then print and delete the smallest element of the array instead.
+
+Explanation:
+To solve this problem, we can observe that if gcd(z, y) > 1, 
+then there must exist a prime number p such that p divides both z and y. 
+So, to answer a given query, we can do the following:
+
+Quickly factorize all prime factors of z, say they are p1, p2, ..., pk.
+For each prime pi, find the smallest element of the array that's divisible by pi, say yi.
+The answer is then simply min(y1, y2, ..., yk).
+Of course, if none of the yi exist, simply take the smallest element of the array.
+The main hurdle is how we can do this quickly. Prime factorization in O(sqrt(N)) each time is almost certainly too slow, since we need to factorize several numbers (all the array elements and the queries).
+
+To factorize small numbers quickly, we can precompute all primes up to sqrt(10^6) using the sieve of Eratosthenes. 
+Then, for each element in the array, we can quickly factorize it by checking which primes divide it.
+
+To answer queries efficiently, we need a data structure that supports quick insertion/deletion, and quickly finding the minimum. 
+One way to achieve this is by using a set or multiset in C++ or TreeSet in Java. Each prime pi will have its own set of elements from the array that are divisible by pi.
+
+For each query, we factorize z as discussed and then iterate through the prime factors, finding the smallest remaining element that's divisible by each prime. 
+We then delete this element from its corresponding set. Each element is inserted into at most log(N) sets and deleted at most once from each, so the time complexity of this part is O(Q log(N) log(10^6)).
+
+Each query requires us to iterate through at most log(N) sets and query each one for the minimum, which can be done in O(1). 
+So, the time complexity of this part is O(Q log(N)).
+
+The overall time complexity of this solution is O(M log(log(M)) + (N + Q) log(N) log(10^6)), where M = 10^6.
